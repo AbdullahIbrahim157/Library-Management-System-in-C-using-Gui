@@ -1,5 +1,7 @@
 cpp-httplib
 ===========
+[Check out our website](https://guiprojects.com/)
+[See post on our website to get deeper understanding](library-management-system-in-cpp-using-gui)
 
 [![](https://github.com/yhirose/cpp-httplib/workflows/test/badge.svg)](https://github.com/yhirose/cpp-httplib/actions)
 
