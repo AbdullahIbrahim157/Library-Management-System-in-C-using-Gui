@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Our Bookstore</title>
+
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        p {
+            color: #555;
+        }
+
+        nav {
+            background-color: #007BFF;
+            padding: 10px;
+            display: flex;
+            justify-content: space-around;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+            nav a {
+                color: white;
+                text-decoration: none;
+                font-weight: bold;
+            }
+
+        .book-container {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .book {
+            width: 200px;
+            padding: 10px;
+            margin: 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+            .book img {
+                width: 100%;
+                max-height: 150px;
+                object-fit: cover;
+                border-radius: 4px;
+            }
+
+        footer {
+            margin-top: 50px;
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+
+        a {
+            color: #007BFF;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+            a:hover {
+                text-decoration: underline;
+            }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <a href="#">Home</a>
+        <a href="#">Browse</a>
+        <a href="#">Login</a>
+        <a href="#">Signup</a>
+        <a href="#">Search</a>
+
+    </nav>
+
+
+
+    <button onclick="goToAnotherPage()">Admin-Page</button>
+    <h1>Welcome to Our Bookstore</h1>
+    <p>Discover a world of knowledge and stories at our online bookstore. Browse our collection of books and find your next adventure.</p>
+
+    <div class="book-container">
+        <div class="book">
+            <img src="./1a.jpg" alt="Book 1">
+            <h3 style="font-family: 'Times New Roman', Times, serif;">Book Title 1</h3>
+            <p>Description of Book 1.</p>
+        </div>
+        <!-- Repeat for more books (10 in total) -->
+        <!-- Book 2 to Book 10 -->
+        <div class="book">
+            <img src="./2a.jpg" alt="Book 2">
+            <h3 style="font-family: 'Times New Roman', Times, serif;">Book Title 2</h3>
+            <p>Description of Book 1.</p>
+        </div>
+
+        <div class="book">
+            <img src="./3a.jpg" alt="Book 3">
+            <h3 style="font-family: 'Times New Roman', Times, serif;">Book Title 3</h3>
+            <p>Description of Book 1.</p>
+        </div>
+        <div class="book">
+            <img src="./4a.jpg" alt="Book 4">
+            <h3 style="font-family: 'Times New Roman', Times, serif;">Book Title 4</h3>
+            <p>Description of Book 1.</p>
+        </div>
+        <div class="book">
+            <img src="./5a.jpg" alt="Book 5">
+            <h3 style="font-family: 'Times New Roman', Times, serif;">Book Title 5</h3>
+            <p>Description of Book 1.</p>
+        </div>
+        <div class="book">
+            <img src="./6a.jpg" alt="Book 6">
+            <h3 style="font-family: 'Times New Roman', Times, serif;">Book Title 6</h3>
+            <p>Description of Book 1.</p>
+        </div>
+        <div class="book">
+            <img src="./7a.jpg" alt="Book 7">
+            <h3 style="font-family: 'Times New Roman', Times, serif;">Book Title 7</h3>
+            <p>Description of Book 1.</p>
+        </div>
+        <div class="book">
+            <img src="./8a.jpg" alt="Book 8">
+            <h3 style="font-family: 'Times New Roman', Times, serif;">Book Title 8</h3>
+            <p>Description of Book 1.</p>
+        </div>
+        <div class="book">
+            <img src="./9a.jpg" alt="Book 9">
+            <h3 style="font-family: 'Times New Roman', Times, serif;">Book Title 9</h3>
+            <p>Description of Book 1.</p>
+        </div>
+        <div class="book">
+            <img src="./10a.jpg" alt="Book 10">
+            <h3 style="font-family: 'Times New Roman', Times, serif;">Book Title 10</h3>
+            <p>Description of Book 1.</p>
+        </div>
+    </div>
+
+
+    <footer>
+        <p>&copy; 2023 Our Bookstore. All rights reserved. | <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a></p>
+    </footer>
+    <script>
+        function goToAnotherPage() {
+            // Navigate to another page
+            window.location.href = "file:///E:/3rd%20Semester/Newfolder/Bookshop01-offline/index.html";
+        }
+    </script>
+</body>
+
+</html>

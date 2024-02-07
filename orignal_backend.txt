@@ -1,0 +1,301 @@
+
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <limits>
+#include <sstream>
+#include "httplib.h"
+#include <string>
+
+
+
+using namespace std;
+using namespace httplib;
+
+
+class book_data {
+public:
+  char books_number[30];
+  char Book_Name[50];
+  char Author_Name[20];
+  int No_Copies;
+
+  void Report(ostream &os) const {
+    os << books_number << setw(30) << Book_Name << setw(30) << Author_Name
+       << setw(30) << No_Copies << endl;
+  }
+};
+
+fstream fp;
+book_data bk;
+
+void clearInputBuffer() {
+  cin.clear();
+  cin.ignore(numeric_limits<streamsize>::max(), '\n');
+}
+
+void write_book_data(const Request &req, Response &res) {
+  // Extract data from the request
+  string bookNumber = req.get_param_value("bookNumber");
+  string bookName = req.get_param_value("bookName");
+  string authorName = req.get_param_value("authorName");
+  int copies = stoi(req.get_param_value("copies"));
+
+  // Open file for writing
+  fp.open("book.dat", ios::out | ios::app);
+  if (!fp) {
+    res.set_content("Error opening file for writing!", "text/plain");
+    return;
+  }
+
+  // Write book data
+  strcpy_s(bk.books_number, bookNumber.c_str());
+  strcpy_s(bk.Book_Name, bookName.c_str());
+  strcpy_s(bk.Author_Name, authorName.c_str());
+  bk.No_Copies = copies;
+
+  fp.write((char *)&bk, sizeof(book_data));
+
+  // Close file
+  fp.close();
+
+  // Set response content
+  res.set_content("Book added successfully!", "text/plain");
+}
+void display_all_books(const Request &req, Response &res) {
+  // Open file for reading
+  fp.open("book.dat", ios::in);
+  if (!fp) {
+    res.set_content("Error opening file for reading!", "text/plain");
+    return;
+  }
+
+  // Create a string to hold book list
+  string bookList;
+
+  // Read book data
+  while (fp.read(reinterpret_cast<char *>(&bk), sizeof(book_data))) {
+    stringstream ss;
+    ss << left << setw(30) << bk.books_number << "|"<<  
+        left << setw(50)
+       << bk.Book_Name << "|" << left << setw(20) << bk.Author_Name
+       << "|" <<
+        left << setw(10) << bk.No_Copies << "|"  <<
+        "|" << endl;
+
+    bookList += ss.str();
+  }
+
+  // Close file
+  fp.close();
+
+  // Set response content
+  res.set_content(bookList, "text/plain");
+}
+void search_book(const Request &req, Response &res) {
+  // Extract data from the request
+  string bookNumber = req.get_param_value("bookNumber");
+
+  // Open file for reading
+  fp.open("book.dat", ios::in);
+  if (!fp) {
+    res.set_content("Error opening file for reading!", "text/plain");
+    return;
+  }
+
+  // Search for the book
+  bool found = false;
+  string bookList;
+
+  while (fp.read((char *)&bk, sizeof(book_data))) {
+    if (strcmp(bk.books_number, bookNumber.c_str()) == 0) {
+      found = true;
+      stringstream ss;
+      bk.Report(ss);
+      bookList += ss.str();
+      break;
+    }
+  }
+
+  // Close file
+  fp.close();
+
+  // Set response content
+  if (found) {
+    res.set_content(bookList, "text/plain");
+  } else {
+    res.set_content("Book not found!", "text/plain");
+  }
+
+
+
+}
+void update_book(const httplib::Request &req, httplib::Response &res) {
+  // Extract data from the request
+  std::string bookNumber = req.get_param_value("bookNumber");
+  std::string bookName = req.get_param_value("bookName");
+  std::string authorName = req.get_param_value("authorName");
+  int copies = std::stoi(req.get_param_value("copies"));
+
+  // Open file for reading and writing
+  std::fstream fp;
+  fp.open("book.dat", std::ios::in | std::ios::out | std::ios::binary);
+  if (!fp) {
+    res.set_content("Error opening file for reading and writing!",
+                    "text/plain");
+    return;
+  }
+
+  // Search for the book and update if found
+  bool found = false;
+
+  while (fp.read(reinterpret_cast<char *>(&bk), sizeof(book_data))) {
+    if (strcmp(bk.books_number, bookNumber.c_str()) == 0) {
+      found = true;
+      strcpy_s(bk.Book_Name, bookName.c_str());
+      strcpy_s(bk.Author_Name, authorName.c_str());
+      bk.No_Copies = copies;
+
+      // Move the file pointer to update the record
+      fp.seekp(fp.tellg() - static_cast<std::streampos>(sizeof(book_data)),
+               std::ios::beg);
+
+      fp.write(reinterpret_cast<char *>(&bk), sizeof(book_data));
+      break;
+    }
+  }
+
+  // Close file
+  fp.close();
+
+  // Set response content
+  if (found) {
+    res.set_content("Book updated successfully!", "text/plain");
+  } else {
+    res.set_content("Book not found!", "text/plain");
+  }
+}
+void delete_book(const Request &req, Response &res) {
+  // Extract data from the request
+  string bookNumber = req.get_param_value("bookNumber");
+
+  // Open file for reading and writing
+  fstream fp;
+  fp.open("book.dat", ios::in | ios::out | ios::binary);
+  if (!fp) {
+    res.set_content("Error opening file for reading and writing!",
+                    "text/plain");
+    return;
+  }
+
+  // Create a temporary file
+  ofstream tempFile("temp.dat", ios::binary);
+  if (!tempFile) {
+    res.set_content("Error opening temporary file for writing!", "text/plain");
+    fp.close();
+    return;
+  }
+
+  // Search for the book and copy records to a temporary file
+  bool found = false;
+
+  while (fp.read(reinterpret_cast<char *>(&bk), sizeof(book_data))) {
+    if (strcmp(bk.books_number, bookNumber.c_str()) != 0) {
+      tempFile.write(reinterpret_cast<char *>(&bk), sizeof(book_data));
+    } else {
+      found = true;
+    }
+  }
+
+  // Close files
+  fp.close();
+  tempFile.close();
+
+  // Remove the original file
+  remove("book.dat");
+
+  // Rename the temporary file to the original file
+  rename("temp.dat", "book.dat");
+
+  // Set response content
+  if (found) {
+    res.set_content("Book deleted successfully!", "text/plain");
+  } else {
+    res.set_content("Book not found!", "text/plain");
+  }
+}
+void download_books(const Request &req, Response &res) {
+  // Open file for reading
+  fp.open("book.dat", std::ios::in | std::ios::binary);
+  if (!fp) {
+    res.set_content("Error opening file for reading!", "text/plain");
+    return;
+  }
+
+  // Create a string to hold book list
+  std::ostringstream bookList;
+
+  // Read book data
+  while (fp.read(reinterpret_cast<char *>(&bk), sizeof(book_data))) {
+    bk.Report(bookList);
+  }
+
+  // Close file
+  fp.close();
+
+  // Set response content
+  res.set_content(bookList.str(), "text/plain");
+  res.set_header("Content-Disposition",
+                 "attachment; filename=books_download.txt");
+}
+void delete_all_books(const Request &req, Response &res) {
+  // Open input file in binary mode
+  ifstream inFile("book.dat", ios::binary);
+  if (!inFile) {
+    res.set_content("Error opening file for reading!", "text/plain");
+    return;
+  }
+
+  // Open output file in binary mode
+  ofstream outFile("temp.dat", ios::binary);
+  if (!outFile) {
+    res.set_content("Error opening temporary file for writing!", "text/plain");
+    inFile.close();
+    return;
+  }
+
+  // Close files
+  inFile.close();
+  outFile.close();
+
+  // Remove the original file
+  remove("book.dat");
+
+  // Rename the temporary file to the original file
+  rename("temp.dat", "book.dat");
+
+  // Set response content
+  res.set_content("All books deleted successfully!", "text/plain");
+}
+
+  int main() {
+
+    Server svr;
+
+    
+    svr.Post("/update", [&](const httplib::Request &req,
+                            httplib::Response &res) { update_book(req, res); });
+  
+    svr.Post("/add", [&](const httplib::Request &req, httplib::Response &res) {
+      write_book_data(req, res);
+    });
+    
+    svr.Get("/delete", delete_book);
+    svr.Get("/display", display_all_books);
+    svr.Get("/search", search_bohok);
+    svr.Get("/download", download_books);
+    svr.Get("/delete-all", delete_all_books);
+    svr.listen("localhost", 8080);
+    return 0;
+  }
+
